@@ -1,0 +1,41 @@
+from selenium.webdriver.common.by import By
+from datetime import datetime
+from initParam import driver
+import requests
+import time
+
+
+def startBookTicket(paramTargetUrl:str,paramTargetDate:str,paramUserName:str,paramPassword:str):
+    targetUrl = paramTargetUrl
+    targetDate = datetime.strptime(paramTargetDate,"%Y-%m-%d %H:%M:%S")
+    userName = paramUserName
+    password = paramPassword
+
+    while datetime.now() < targetDate:
+        time.sleep(1)
+    driver.get(targetUrl)
+
+    input_username = driver.find_element(By.ID,"username")
+    input_userpwd = driver.find_element(By.ID,"password")
+    input_username.send_keys(userName)
+    input_userpwd.send_keys(password)
+
+    login_Btn = driver.find_element(By.ID,"login")
+    login_Btn.click()
+
+    time.sleep(5)
+
+    user_cookie = driver.get_cookies()
+
+    for cookie in user_cookie:
+        print("cookie",cookie)
+
+    driver.quit()
+
+    session = requests.Session()
+    for cookie in user_cookie:
+        session.cookies.set(cookie["name"],cookie["value"])
+
+    response = session.get(targetUrl)
+    print("res -> ",response.text)
+    return
