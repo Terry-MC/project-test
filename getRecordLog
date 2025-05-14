@@ -1,0 +1,22 @@
+import requests
+
+def getRecordLog(current_cookie,request_url):
+    params = {page:1}
+    headers = {
+        'Cookie' : current_cookie
+    }
+    request_data = []
+    while(True):
+        response = requests.get(request_url,headers=headers,params=params)
+        if(response.status_code != 200):
+            print("request failed")
+            break
+        data = response.json()
+        if not data["items"]:
+            print("no more data")
+            break
+        for dataItem in data['item']:
+            print(dataItem)
+            request_data.append(dataItem)
+        params["page"] += 1
+    return
